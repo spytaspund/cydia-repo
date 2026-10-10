@@ -1,0 +1,21 @@
+<package>
+	<id>com.spytaspund.si-c-bat</id>
+	<name>Silicon-Carbon battery</name>
+	<version>1.0.0</version>
+	<compatibility>
+		<firmware>
+			<miniOS>7.0</miniOS>
+			<maxiOS>9.3.6</maxiOS>
+			<otherVersions>unconfirmed</otherVersions>
+		</firmware>
+	</compatibility>
+	<dependencies>com.fortysixandtwo.alkaline</dependencies>
+	<descriptionlist>
+		<description>Si-C battery is a theme for alkaline tweak, porting iOS 13-18 battery style to legacy devices running iOS 7-9 (or even more thanks to alkaline continuations).</description>
+	</descriptionlist>
+	<screenshots></screenshots>
+	<changelog>
+		<change>Initial release</change>
+	</changelog>
+	<links></links>
+</package>

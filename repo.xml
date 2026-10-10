@@ -1,0 +1,9 @@
+<repo>
+	<footerlinks>
+		<link>
+			<name>Visit this repo on GitHub!</name>
+			<url>https://github.com/spytaspund/cydia-repo</url>
+			<iconclass>fa fa-twitter</iconclass>
+		</link>
+	</footerlinks>
+</repo>
