@@ -1,135 +1,270 @@
-function getContentBlocks() {
-    return {
-        "#packageName" : {
-            "type": "text",
-            "source": "package>name"
-        },
-        "#packageHeader" : {
-            "type":"custom",
-            "source":"package>name",
-            "render":function(element,source) {
-                if (navigator.userAgent.search(/Cydia/) == -1) {
-                    $(element).show();
-                }
-            }
-        },
-        "#packageVersion" : {
-            "type": "text",
-            "source": "package>version"
-        },
-        "#packageShortDesc" : {
-            "type": "text",
-            "source": "package>shortDescription"
-        },
-        "#compatibilityCheck" : {
-            "type":"custom",
-            "source":"package>compatibility>firmware",
-            "render":function(element,source){
-                var res = ios_version_check(
-                    $(source).find("miniOS").text(),
-                    $(source).find("maxiOS").text(),
-                    $(source).find("otherVersions").text(),
-                    function(message,isBad) {
-                        $(element).html(message)
-                        .addClass( (isBad?'alert-danger':'alert-success'));
-                    }
-                );
-                if(res==0) {$(element).hide()}
-            }
-        },
-        "#descriptionList"	: {
-            "type": "list",
-            "source":"package>descriptionlist>description",
-            "paragraphElement": "<li class='list-group-item'>",
-            "emptyListCallback": function(e){$("#descriptionPanel").hide()}
-        },
-        "#screenshotsLink"	: {
-            "type":"custom",
-            "source" :"package>screenshots>screenshot",
-            "render":function(element, source){
-                $("#screenshotsLink").remove();
-                if ($(source).size() == 0) {
-                        return
-                }
-                // create screenshots link
-                $("#descriptionList").append(
-                    $("<a class='link-item list-group-item'>")
-                    .attr("href","screenshots.html?p="+bundleid)
-                    .text("Screenshots")
-                );
-            }
-        },
-        "#versionBadge" : {"type":"text","source":"package>version"},
-        "#changesList"	: {
-            "type":"list"
-            ,"source" :"package>changelog>change"
-            ,"reverseRender"    : true
-            ,"paragraphElement"	: "<li class='list-group-item'>"
-            ,"emptyListCallback":function(e){$("#changesList").hide()}
-        },
-        "#changelogLink" : {
-            "type":"custom",
-            "source" :"package>changelog>change",
-            "render":function(element, source){
-                $("#changelogLink").remove();
-                if ($(source).size() == 0) {
-                    return
-                }
-                // create changelog link
-                $("#changesList").append(
-                    $("<a class='link-item list-group-item'>")
-                    .attr("href","changelog.html?p="+bundleid)
-                    .text("Full Changelog")
-                );
-            }
-        },
-        "#dependencyList" : {
-            "type":"list",
-            "source" :"package>dependencies>package",
-            "paragraphElement"	: "<li class='list-group-item'>",
-            "emptyListCallback":function(e){$("#dependenciesContainer").remove()}
-        },
-        "#externalLinksList" : {
-            "type":"custom",
-            "source" :"package>links>link",
-            "paragraphElement"	: "<li class='list-group-item'>",
-            "render":function(element,source){
-                if ($(source).size()==0){
-                    $('#externalLinksContainer').remove()
-                }
+(function ($) {
+    "use strict";
 
-                $.each(source, function(index,data) {
-                    var a = $("<a class='link-item list-group-item'>");
-                    a.attr("href",$(data).find('url').text());
-                    if ($(data).find('iconclass')) {
-                        var i =  $("<span>")
-                        i.attr("class",$(data).find('iconclass').text());
-                        console.log(i);
-                        $(a).append(i);
-                    }
-                    $(a).append($(data).find('name').text());
-                    $(element).append(a);
-                }); //each
+    function getParameter(name) {
+        var query = window.location.search.substring(1);
+        var parts = query.split("&");
 
+        for (var i = 0; i < parts.length; i++) {
+            var pair = parts[i].split("=");
+
+            if (decodeURIComponent(pair[0].replace(/\+/g, " ")) === name) {
+                return decodeURIComponent(
+                    (pair.slice(1).join("=")).replace(/\+/g, " ")
+                );
             }
+        }
+
+        return null;
+    }
+
+    function addRow(list, content) {
+        $("<li>").append(content).appendTo(list);
+    }
+
+    function addLink(list, name, url, iconClass) {
+        if (!name || !url) {
+            return;
+        }
+
+        var link = $("<a>")
+            .attr("href", url)
+            .attr("role", "button")
+            .text(name);
+
+        if (iconClass) {
+            link.prepend(
+                $("<span>")
+                    .addClass(iconClass)
+                    .attr("aria-hidden", "true")
+            );
+        }
+
+        addRow(list, link);
+    }
+
+    function getText(parent, selector) {
+        return $(parent).children(selector).first().text().trim();
+    }
+
+    function showError() {
+        $("#packageInformation").hide();
+        $("#packageError").show();
+    }
+
+    function hideIfEmpty(header, list) {
+        if (!$(list).children().length) {
+            $(header).hide();
+            $(list).hide();
         }
     }
-}
 
-function populateContentBlocks(data, blocks, error, success) {
-    $.ajax({
-        type    : "GET",
-        dataType: "xml",
-        url     : data,
-        success : function(xml){
-            data_loader_engine(blocks,xml);
-            success(xml);
-        },
-        cache   : false,
-        error: function(jqXHR, textStatus) {
-            $("#packageError").show();
-            $("#packageInformation").hide();
-            error(textStatus);
+    window.loadPackage = function () {
+        var bundleid = getParameter("p");
+
+        if (!bundleid ||
+            !/^[a-zA-Z0-9._-]+$/.test(bundleid)) {
+            showError();
+            return;
         }
-    }); //ajax    
-}
+
+        $.ajax({
+            url: bundleid + "/info.xml",
+            type: "GET",
+            dataType: "xml",
+            cache: false
+        }).done(function (xml) {
+            var $xml = $(xml);
+            var $package = $xml.find("package").first();
+
+            if (!$package.length) {
+                showError();
+                return;
+            }
+
+            var name = getText($package, "name");
+            var version = getText($package, "version");
+            var shortDescription = getText($package, "shortDescription");
+
+            document.title = name || "Package";
+
+            $("#packageName").text(name || "Package");
+            $("#packageShortDesc").text(shortDescription);
+
+            if (!shortDescription) {
+                $("#packageShortDesc").hide();
+            }
+
+            $("#versionBadge").text(version);
+
+            var $firmware = $package
+                .children("compatibility")
+                .children("firmware");
+
+            var minIOS = getText($firmware, "miniOS");
+            var maxIOS = getText($firmware, "maxiOS");
+            var otherVersions = getText($firmware, "otherVersions");
+
+            var $compatibilityHeader = $("#compatibilityHeader");
+            var $compatibilityList = $("#compatibilityList");
+            var $compatibilityCheck = $("#compatibilityCheck");
+
+            if (minIOS) {
+                ios_version_check(
+                    minIOS,
+                    maxIOS,
+                    otherVersions,
+                    function (message, isBad, status) {
+                        var $lights = $("<span>")
+                            .addClass("status-lights")
+                            .attr("aria-hidden", "true");
+
+                        for (var i = 0; i < 3; i++) {
+                            $lights.append(
+                                $("<span>").addClass("status-light")
+                            );
+                        }
+
+                        $compatibilityCheck
+                            .empty()
+                            .removeClass(
+                                "status-supported status-unconfirmed " +
+                                "status-needs-upgrade status-unsupported " +
+                                "status-unknown"
+                            )
+                            .addClass("compatibility-status")
+                            .addClass("status-" + status)
+                            .append($lights)
+                            .append(
+                                $("<span>")
+                                    .addClass("compatibility-message")
+                                    .text(message)
+                            )
+                            .show();
+
+                        $compatibilityHeader.show();
+                        $compatibilityList.show();
+                    }
+                );
+            } else {
+                $compatibilityHeader.hide();
+                $compatibilityList.hide();
+            }
+
+            var $descriptionList = $("#descriptionList");
+            var $descriptions = $package
+                .children("descriptionlist")
+                .children("description");
+
+            $descriptions.each(function () {
+                addRow(
+                    $descriptionList,
+                    $("<p>").text($(this).text().trim())
+                );
+            });
+
+            var $screenshots = $package
+                .children("screenshots")
+                .children("screenshot");
+
+            if ($screenshots.length) {
+                addRow(
+                    $descriptionList,
+                    $("<a>")
+                        .attr("href",
+                            "screenshots.html?p=" +
+                            encodeURIComponent(bundleid))
+                        .attr("role", "button")
+                        .text("Screenshots")
+                );
+            }
+
+            hideIfEmpty("#descriptionHeader", $descriptionList);
+
+            var $changesList = $("#changesList");
+            var $changes = $package
+                .children("changelog")
+                .children("change");
+
+            $changes.each(function () {
+                addRow(
+                    $changesList,
+                    $("<p>").text($(this).text().trim())
+                );
+            });
+
+            hideIfEmpty("#versionHeader", $changesList);
+
+            if ($changes.length) {
+                $("#changelogLink").attr(
+                    "href",
+                    "changelog.html?p=" + encodeURIComponent(bundleid)
+                );
+            } else {
+                $("#changelogHeader, #changelogList").hide();
+            }
+
+            var $dependencyList = $("#dependencyList");
+            var $dependencies = $package.children("dependencies");
+
+            var dependencyIDs = [];
+
+            $dependencies.children("package").each(function () {
+                var id = $(this).text().trim();
+                if (id) dependencyIDs.push(id);
+            });
+
+            if (!$dependencies.children("package").length) {
+                var dependencyText = $dependencies.text().trim();
+
+                if (dependencyText) {
+                    dependencyIDs = dependencyText
+                        .split(/[\s,]+/)
+                        .filter(Boolean);
+                }
+            }
+
+            dependencyIDs.forEach(function (id) {
+                var link = $("<a>")
+                    .attr("href", id + "/info.xml")
+                    .attr("role", "button")
+                    .text(id);
+
+                addRow($dependencyList, link);
+            });
+
+            hideIfEmpty("#dependenciesHeader", $dependencyList);
+
+            var $externalList = $("#externalLinksList");
+            var $links = $package.children("links").children("link");
+
+            $links.each(function () {
+                var name = getText(this, "name");
+                var url = getText(this, "url");
+                var iconClass = getText(this, "iconclass");
+
+                addLink($externalList, name, url, iconClass);
+            });
+
+            hideIfEmpty("#externalLinksHeader", $externalList);
+
+            var $contactList = $("#repoFooterLinks");
+            var $contact = $package.children("contact");
+
+            $contact.children("link").each(function () {
+                addLink(
+                    $contactList,
+                    getText(this, "name"),
+                    getText(this, "url"),
+                    getText(this, "iconclass")
+                );
+            });
+
+            hideIfEmpty("#contactHeader", $contactList);
+
+        }).fail(function () {
+            showError();
+        });
+    };
+
+})(jQuery);

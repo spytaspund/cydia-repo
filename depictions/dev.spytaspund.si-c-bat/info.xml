@@ -1,5 +1,5 @@
 <package>
-	<id>com.spytaspund.si-c-bat</id>
+	<id>dev.spytaspund.si-c-bat</id>
 	<name>Silicon-Carbon battery</name>
 	<version>1.0.0</version>
 	<compatibility>
@@ -17,5 +17,17 @@
 	<changelog>
 		<change>Initial release</change>
 	</changelog>
-	<links></links>
+	<links>
+		<link>
+			<name>GitHub</name>
+			<url>https://github.com/spytaspund</url>
+		</link>
+	</links>
+
+	<contact>
+		<link>
+			<name>Email me!</name>
+			<url>mailto:spytaspund@gmail.com</url>
+		</link>
+	</contact>
 </package>

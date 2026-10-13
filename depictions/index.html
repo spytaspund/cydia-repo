@@ -1,145 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>PackageName</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="style.css?rand=1">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-  <script type="text/javascript" src="js/jquery.querystring.js"></script>
-  <script type="text/javascript" src="js/data-loader-engine.js"></script>
-  <script type="text/javascript" src="js/ios_version_check.js"></script>
-   <script type="text/javascript" src="js/content-blocks-index.js"></script>
-  <script type="text/javascript">
+    <meta charset="utf-8">
+    <title>Package</title>
+    <meta name="viewport"
+          content="initial-scale=1, maximum-scale=1, user-scalable=0">
 
-	bundleid = $.QueryString['p'];
+    <link rel="stylesheet"
+          href="https://raw.githack.com/hbang/iOS-7-CSS/refs/heads/master/ios7.min.css">
 
-	var contentBlocks = getContentBlocks();
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://raw.githack.com/hbang/iOS-7-CSS/refs/heads/master/ios7.min.js"></script>
 
-    $( document ).ready(function() {
-		//return;
-		populateContentBlocks(
-			(bundleid+"/info.xml"),
-			contentBlocks,
-			() => {
-                $("#packageError").show();
-				$("#packageInformation").hide();				
-			},
-			(xml) => {
-				document.title = $(xml).find("package>name").text();
-			}
-		)
+    <script src="js/ios_version_check.js"></script>
+    <script src="js/content-blocks-index.js"></script>
 
-    }); // ready
-  </script>
+	<style>
+		.compatibility-status {
+			display: block;
+			padding: 2px 0;
+		}
+
+		.status-lights {
+			display: inline-block;
+			white-space: nowrap;
+			margin-right: 9px;
+			vertical-align: middle;
+		}
+
+		.status-light {
+			display: inline-block;
+			width: 9px;
+			height: 9px;
+			border-radius: 50%;
+			background: #c7c7cc;
+			margin-right: 4px;
+			vertical-align: middle;
+		}
+
+		.status-light:last-child {
+			margin-right: 0;
+		}
+
+		.status-needs-upgrade .status-light:nth-child(1),
+		.status-unsupported .status-light:nth-child(1) {
+			background: #ff3b30;
+		}
+
+		.status-unconfirmed .status-light:nth-child(2) {
+			background: #ffcc00;
+		}
+
+		.status-supported .status-light:nth-child(3) {
+			background: #34c759;
+		}	
+
+		.compatibility-message {
+			vertical-align: middle;
+		}
+	</style>
 </head>
 <body>
-<br />
 
-<div id="packageInformation">
+    <div id="packageError" style="display:none; padding:20px; text-align:center;">
+        <p style="color:#ff3b30;">
+            <strong>Oh snap!</strong>
+            The package you are trying to view is not hosted on this repository.
+        </p>
+    </div>
 
-	<div id="packageHeader" class="container" style="display:block">
-		<div class="jumbotron">
-			<h1 id="packageName">&nbsp;</h1>
-			<p id="packageShortDesc">&nbsp;</p>
-		</div>
-	</div>
+    <div id="packageInformation">
 
-	<div class="container">
-	  <div id="compatibilityCheck" class="alert">&nbsp;</div>
-	</div>
+        <header class="ios-header">
+            <h1 id="packageName">Package</h1>
+            <p id="packageShortDesc"
+               style="font-size:13px;color:#8e8e93;margin:-5px 0 10px;text-align:center;"></p>
+        </header>
 
-	<div class="container">
-		<h5>DESCRIPTION</h5>
-		<ul id="descriptionList" class="list-group">
-			<li id="screenshotsLink" class="link-item list-group-item">Screenshots</li>
-		</ul>
-	</div>
+        <main class="ios-table ios-main">
 
-	<div class="container">
-		<h5>IN THIS VERSION <span id="versionBadge" class="badge" /></h5>
-		<ul id="changesList" class="list-group">
-			<li id="changelogLink"  class="link-item list-group-item">Full Changelog</li>
-		</ul>
-	</div>
-	<div class="container" id="dependenciesContainer">
-		<h5>DEPENDENCIES</h5>
-		<ul id="dependencyList" class="list-group">
-		</ul>
-	</div>
+            <h2 role="header" id="compatibilityHeader">Compatibility</h2>
+            <ul id="compatibilityList">
+                <li>
+                    <p id="compatibilityCheck"></p>
+                </li>
+            </ul>
 
-	<div class="container" id="externalLinksContainer">
-		<h5>LINKS</h5>
-		<ul id="externalLinksList" class="list-group">
-		</ul>
-	</div>
+            <h2 role="header" id="descriptionHeader">Description</h2>
+            <ul id="descriptionList"></ul>
 
-</div>
-<div id="packageError" style="display:none">
-	<div class="container">
-	  <div class="alert alert-danger">
-		<strong>Oh snap!</strong> The package you are trying to view is not hosted on this repository.
-	  </div>
-	</div>
-</div>
+            <h2 role="header" id="versionHeader">
+                In This Version
+                <span id="versionBadge"
+                      style="float:right;color:#8e8e93;font-weight:normal;"></span>
+            </h2>
+            <ul id="changesList"></ul>
 
-<script type="text/javascript">
-   function setAnchorTargets() {
-     // if on Cydia, set link targets to _blank
-     if (navigator.userAgent.search(/Cydia/) != -1) {
-       $("a").each(function() {
-         $(this).attr("target","_blank");
-       });
-     }
-   }
+            <h2 role="header" id="changelogHeader">Release History</h2>
+            <ul id="changelogList">
+                <li>
+                    <a id="changelogLink" href="#" role="button">Full Changelog</a>
+                </li>
+            </ul>
 
-    var repoContents =  {
-        "#repoFooterLinks" :
-            {"type":"custom"
-                ,"source":"repo>footerlinks>link"
-                ,"render":function(element,source) {
-                    $.each(source, function(index,data) {
-                        var a = $("<a class='link-item list-group-item'>");
-                        a.attr("href",$(data).find('url').text());
-                        if ($(data).find('iconclass')) {
-                            var i =  $("<span>")
-                            i.attr("class",$(data).find('iconclass').text());
-                            console.log(i);
-                            $(a).append(i);
-                        }
-                        $(a).append($(data).find('name').text());
-                        $(element).append(a);
-                    }); //each
-                } //render
-            }
-    }
-    $( document ).ready(function() {
-        $.ajax({type: "GET", dataType: "xml",url : ("../repo.xml"),cache: false,
-            success : function(xml){
-				      data_loader_engine(repoContents,xml);
-              setAnchorTargets();
-			      },
-            error: function() {
-              $("#contactInfo").hide();
-              setAnchorTargets();
-            }
-        }); //ajax
+            <h2 role="header" id="externalLinksHeader">Links</h2>
+            <ul id="externalLinksList"></ul>
 
+            <h2 role="header" id="contactHeader">Contact</h2>
+            <ul id="repoFooterLinks"></ul>
 
-    }); // ready
+        </main>
+    </div>
 
-</script>
-
-<div id="contactInfo">
-	<div class="container">
-		<h5>CONTACT</h5>
-		<ul class="list-group" id="repoFooterLinks">
-		</ul>
-	</div>
-</div>
-
-
+    <script>
+        $(function () {
+            loadPackage();
+        });
+    </script>
 </body>
 </html>
