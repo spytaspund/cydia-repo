@@ -1,0 +1,6 @@
+<changelog>
+	<changes>
+		<version>4.4.8</version>
+		<change>Version 4.4.8. FFmpeg compiled with gas-preprocessor ASM optimisations, included libx264 is not. armv6 libx264 is running in pure C. Confirmed http protocol working, doesn't support https.</change>
+	</changes>
+</changelog>

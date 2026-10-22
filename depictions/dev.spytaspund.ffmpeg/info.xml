@@ -1,0 +1,32 @@
+<package>
+	<id>dev.spytaspund.ffmpeg</id>
+	<name>FFmpeg+FFprobe</name>
+	<version>4.4.8</version>
+	<compatibility>
+		<firmware>
+			<miniOS>3.0</miniOS>
+			<otherVersions>unconfirmed</otherVersions>
+		</firmware>
+	</compatibility>
+	<dependencies></dependencies>
+	<descriptionlist>
+		<description>Relatively modern FFmpeg suite compiled for armv6 and armv7.</description>
+	</descriptionlist>
+	<screenshots></screenshots>
+	<changelog>
+		<change>Version 4.4.8</change>
+	</changelog>
+	<links>
+		<link>
+			<name>GitHub</name>
+			<url>https://github.com/spytaspund</url>
+		</link>
+	</links>
+
+	<contact>
+		<link>
+			<name>Email me!</name>
+			<url>mailto:spytaspund@gmail.com</url>
+		</link>
+	</contact>
+</package>
