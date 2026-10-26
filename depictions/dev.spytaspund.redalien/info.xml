@@ -11,18 +11,8 @@
 	</compatibility>
 	<dependencies>dev.spytaspund.ffmpeg</dependencies>
 	<descriptionlist>
-		<description>This tweak aims to fix as many old iOS Alien Blue Reddit client features as possible.
-        Minimum development target is iOS 3.0 (armv6).
-
-        # What this tweak fixes?
-        - Sign In (via OAuth)
-        - Personalized feed
-        - DMs
-        - Regular posts, subreddits, comments
-        - Photos
-        - Galleries
-        - Videos
-        - Subreddit icons
+		<description>
+            This tweak aims to fix as many old iOS Alien Blue Reddit client features as possible. <b>Minimum development target is iOS 3.0 (armv6).</b> This tweak fixes: Sign In (via OAuth), Personalized feed, DMs, Regular posts, subreddits, comments, Photos, Galleries, Videos, Subreddit icons
         </description>
 	</descriptionlist>
 	<screenshots></screenshots>
