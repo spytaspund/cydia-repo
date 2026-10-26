@@ -1,0 +1,5 @@
+<changelog>
+	<changes>0.0.4</version>
+		<change>Video rework to support iOS 3. Also from now on RedAlien supports official Reddit app v1.5, tested on iOS 8.4.1 and 9.3.6.</change>
+	</changes>
+</changelog>

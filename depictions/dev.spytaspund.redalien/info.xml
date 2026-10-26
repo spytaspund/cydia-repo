@@ -1,0 +1,44 @@
+<package>
+	<id>dev.spytaspund.redalien</id>
+	<name>RedAlien</name>
+	<version>0.0.4</version>
+	<compatibility>
+		<firmware>
+			<miniOS>3.0</miniOS>
+            <maxiOS>10.3.4</maxiOS>
+			<otherVersions>unsupported</otherVersions>
+		</firmware>
+	</compatibility>
+	<dependencies>dev.spytaspund.ffmpeg</dependencies>
+	<descriptionlist>
+		<description>This tweak aims to fix as many old iOS Alien Blue Reddit client features as possible.
+        Minimum development target is iOS 3.0 (armv6).
+
+        # What this tweak fixes?
+        - Sign In (via OAuth)
+        - Personalized feed
+        - DMs
+        - Regular posts, subreddits, comments
+        - Photos
+        - Galleries
+        - Videos
+        - Subreddit icons
+        </description>
+	</descriptionlist>
+	<screenshots></screenshots>
+	<changelog>
+		<change>Video rework</change>
+	</changelog>
+	<links>
+		<link>
+			<name>GitHub</name>
+			<url>https://github.com/spytaspund/redalien</url>
+		</link>
+	</links>
+	<contact>
+		<link>
+			<name>Email me!</name>
+			<url>mailto:spytaspund@gmail.com</url>
+		</link>
+	</contact>
+</package>
